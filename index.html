@@ -6,9 +6,9 @@
     <title>SEG | Digital Testing Center</title>
     <style>
         :root { --primary: #003057; --accent: #fbbc05; --success: #28a745; --bg: #f0f4f8; --white: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
         .navbar { background: var(--primary); color: white; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; border-bottom: 5px solid var(--accent); letter-spacing: 1px; }
-        .container { width: 90%; max-width: 900px; margin: 30px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .container { width: 90%; max-width: 900px; margin: 30px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); flex: 1; }
         
         .menu-grid { 
             display: grid; 
@@ -50,6 +50,17 @@
         
         .option span { line-height: 1.5; }
         .result-box { text-align: center; display: none; }
+
+        /* Footer Style */
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: #666;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -94,6 +105,10 @@
         <button class="btn" onclick="location.reload()">Try Again</button>
     </div>
 </div>
+
+<footer>
+    Developed by <b>CHAN Sokhoeurn, C2/DBA</b>
+</footer>
 
 <script>
     let examData = [];
