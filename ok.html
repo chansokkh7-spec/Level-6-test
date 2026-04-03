@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEG | Digital Testing Center</title>
+    <style>
+        :root {
+            --primary: #003057;
+            --accent: #fbbc05;
+            --success: #28a745;
+            --bg: #f0f4f8;
+            --white: #ffffff;
+        }
+
+        body { font-family: 'Khmer OS Battambang', 'Segoe UI', sans-serif; background: var(--bg); margin: 0; min-height: 100vh; }
+        .navbar { background: var(--primary); color: white; padding: 20px; text-align: center; font-size: 26px; font-weight: bold; border-bottom: 5px solid var(--accent); letter-spacing: 2px; }
+        .container { width: 95%; max-width: 900px; margin: 30px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        
+        /* Menu Grid ប្តូរទៅជា ៣ ជួរសម្រាប់ Desktop និង ២ ជួរសម្រាប់ទូរស័ព្ទ */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card { background: var(--white); border: 1px solid #e0e0e0; padding: 25px 15px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .card h3 { color: var(--primary); margin: 0 0 5px 0; font-size: 19px; }
+        .card p { margin: 0; font-size: 14px; color: #666; }
+        .card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 5px; background: var(--accent); }
+
+        .input-group { margin-bottom: 20px; }
+        input[type="text"], textarea { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 16px; box-sizing: border-box; }
+        textarea { height: 120px; font-family: monospace; }
+        
+        .question-card { background: #f9f9f9; padding: 20px; border-radius: 15px; margin-bottom: 20px; border-left: 5px solid var(--accent); }
+        .option { display: block; background: white; border: 1px solid #ddd; padding: 12px; margin: 8px 0; border-radius: 10px; cursor: pointer; }
+        .option:hover { background: #eef4ff; }
+
+        .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; margin-top: 10px; }
+        .btn-back { background: #6c757d; width: auto; padding: 10px 20px; font-size: 14px; margin-bottom: 20px; }
+
+        .result-box { text-align: center; padding: 40px; border: 5px double var(--primary); border-radius: 15px; display: none; }
+        .score-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 20px auto; font-size: 22px; }
+        
+        .hidden { display: none; }
+        .footer-note { font-size: 12px; color: #999; text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">SEG DIGITAL TESTING CENTER</div>
+
+<div class="container">
+    <div id="menu-step">
+        <h2 style="text-align: center; color: var(--primary);">សូមជ្រើសរើសប្រភេទវិញ្ញាសា</h2>
+        <div class="menu-grid">
+            <div class="card" onclick="goToSetup('Worksheet')"><h3>Worksheet</h3><p>សន្លឹកកិច្ចការក្នុងថ្នាក់</p></div>
+            <div class="card" onclick="goToSetup('Homework')"><h3>Homework</h3><p>កិច្ចការផ្ទះ</p></div>
+            <div class="card" onclick="goToSetup('Placement Test')"><h3>Placement Test</h3><p>តេស្តវាស់កម្រិត</p></div>
+            <div class="card" onclick="goToSetup('Monthly Test')"><h3>Monthly Test</h3><p>តេស្តប្រចាំខែ</p></div>
+            <div class="card" onclick="goToSetup('Mid-term Exam')"><h3>Mid-term Exam</h3><p>ពាក់កណ្ដាលវគ្គ</p></div>
+            <div class="card" onclick="goToSetup('Final Exam')"><h3>Final Exam</h3><p>បញ្ចប់វគ្គសិក្សា</p></div>
+        </div>
+    </div>
+
+    <div id="setup-step" class="hidden">
+        <button class="btn btn-back" onclick="location.reload()">← ត្រឡប់ក្រោយ</button>
+        <h2 id="setup-title" style="color: var(--primary);"></h2>
+        <p>បិទភ្ជាប់កូដ [ ] ពី AI ដើម្បីបង្កើតសំណួរ៖</p>
+        <textarea id="json-input" placeholder='ឧទាហរណ៍៖ [ ["1+1=?", "2", "3", "4", "2"] ]'></textarea>
+        <button class="btn" onclick="startExam()">បង្កើតវិញ្ញាសាភ្លាមៗ</button>
+    </div>
+
+    <div id="exam-step" class="hidden">
+        <h2 id="active-test-title" style="text-align: center; color: var(--primary);"></h2>
+        <div class="input-group">
+            <label><b>ឈ្មោះសិស្ស (Student Name):</b></label>
+            <input type="text" id="student-name" placeholder="វាយឈ្មោះរបស់អ្នកនៅទីនេះ...">
+        </div>
+        <hr>
+        <div id="questions-container"></div>
+        <button class="btn" style="background: var(--success);" onclick="finishExam()">បញ្ជូនចម្លើយ (Submit)</button>
+    </div>
+
+    <div id="result-step" class="result-box">
+        <h2 style="color: var(--primary);">លទ្ធផលនៃការប្រឡង</h2>
+        <p>សិស្សឈ្មោះ៖ <span id="res-name" style="font-weight: bold; color: var(--success);"></span></p>
+        <div class="score-circle">
+            <span id="res-score">0/0</span>
+            <small style="font-size: 10px;">Points</small>
+        </div>
+        <p id="res-grade" style="font-size: 18px; font-weight: bold;"></p>
+        <p style="font-size: 14px; color: #666;">សូមថតរូបអេក្រង់ (Screenshot) ផ្ញើជូនគ្រូបង្គោល។</p>
+        <button class="btn" onclick="location.reload()">ទៅទំព័រដើម</button>
+    </div>
+
+    <div class="footer-note">© 2026 SEG - Education Quality & Leadership</div>
+</div>
+
+<script>
+    let examData = [];
+    let currentTitle = "";
+
+    function goToSetup(title) {
+        currentTitle = title;
+        document.getElementById('menu-step').classList.add('hidden');
+        document.getElementById('setup-step').classList.remove('hidden');
+        document.getElementById('setup-title').innerText = "រៀបចំ " + title;
+    }
+
+    function startExam() {
+        const input = document.getElementById('json-input').value;
+        try {
+            examData = JSON.parse(input);
+            document.getElementById('setup-step').classList.add('hidden');
+            document.getElementById('exam-step').classList.remove('hidden');
+            document.getElementById('active-test-title').innerText = currentTitle;
+            
+            let html = "";
+            examData.forEach((item, index) => {
+                html += `
+                <div class="question-card">
+                    <p><b>សំណួរទី ${index + 1}: ${item[0]}</b></p>
+                    <label class="option"><input type="radio" name="q${index}" value="${item[1]}"> ${item[1]}</label>
+                    <label class="option"><input type="radio" name="q${index}" value="${item[2]}"> ${item[2]}</label>
+                    <label class="option"><input type="radio" name="q${index}" value="${item[3]}"> ${item[3]}</label>
+                </div>`;
+            });
+            document.getElementById('questions-container').innerHTML = html;
+            window.scrollTo(0,0);
+        } catch (e) { alert("កូដសំណួរមិនត្រឹមត្រូវ!"); }
+    }
+
+    function finishExam() {
+        const name = document.getElementById('student-name').value;
+        if (!name) return alert("សូមបំពេញឈ្មោះសិស្ស!");
+
+        let score = 0;
+        examData.forEach((item, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            if (selected && selected.value === item[4]) score++;
+        });
+
+        document.getElementById('exam-step').classList.add('hidden');
+        document.getElementById('result-step').style.display = "block";
+        document.getElementById('res-name').innerText = name;
+        document.getElementById('res-score').innerText = `${score}/${examData.length}`;
+        
+        let percent = (score/examData.length) * 100;
+        let grade = percent >= 90 ? "Excellent! 🌟" : percent >= 75 ? "Very Good! 👍" : percent >= 50 ? "Passed! 😊" : "Keep Trying! 💪";
+        document.getElementById('res-grade').innerText = grade;
+    }
+</script>
+
+</body>
+</html>
