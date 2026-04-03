@@ -22,10 +22,15 @@
         .card h3 { margin: 0; color: var(--primary); }
         
         .hidden { display: none; }
-        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 16px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; }
+        input[type="text"], textarea { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 16px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; margin-top: 10px; }
         .question-card { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--accent); }
-        .option { display: block; margin: 12px 0; cursor: pointer; font-size: 16px; }
+        
+        /* កែសម្រួល Label ឱ្យរង្វង់ចុចនៅខាងមុខ */
+        .option { display: flex; align-items: center; margin: 12px 0; cursor: pointer; font-size: 18px; padding: 5px; border-radius: 5px; transition: 0.2s; }
+        .option:hover { background: #ececec; }
+        .option input { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; }
+        
         .result-box { text-align: center; display: none; }
     </style>
 </head>
@@ -51,7 +56,7 @@
         <p style="text-align: center;">សូមបិទភ្ជាប់កូដសំណួរដែលទទួលបានពីអ្នកគ្រូ៖</p>
         <textarea id="json-input" rows="8" placeholder='បិទភ្ជាប់កូដសំណួរនៅទីនេះ...'></textarea>
         <button class="btn" onclick="startExam()">បង្កើតវិញ្ញាសាភ្លាមៗ</button>
-        <button class="btn" style="background: #ccc; margin-top: 10px;" onclick="location.reload()">ត្រឡប់ក្រោយ</button>
+        <button class="btn" style="background: #ccc;" onclick="location.reload()">ត្រឡប់ក្រោយ</button>
     </div>
 
     <div id="exam-step" class="hidden">
@@ -93,10 +98,10 @@
             examData.forEach((item, index) => {
                 html += `
                     <div class="question-card">
-                        <p><b>${index + 1}. ${item[0]}</b></p>
-                        <label class="option"><input type="radio" name="q${index}" value="${item[1]}"> ${item[1]}</label>
-                        <label class="option"><input type="radio" name="q${index}" value="${item[2]}"> ${item[2]}</label>
-                        <label class="option"><input type="radio" name="q${index}" value="${item[3]}"> ${item[3]}</label>
+                        <p style="font-size: 20px;"><b>${index + 1}. ${item[0]}</b></p>
+                        <label class="option"><input type="radio" name="q${index}" value="${item[1]}"> <span>${item[1]}</span></label>
+                        <label class="option"><input type="radio" name="q${index}" value="${item[2]}"> <span>${item[2]}</span></label>
+                        <label class="option"><input type="radio" name="q${index}" value="${item[3]}"> <span>${item[3]}</span></label>
                     </div>
                 `;
             });
@@ -108,17 +113,12 @@
 
     function finishExam() {
         const name = document.getElementById('student-name').value;
-        if (!name) {
-            alert("សូមវាយឈ្មោះរបស់អ្នកជាមុនសិន!");
-            return;
-        }
+        if (!name) { alert("សូមវាយឈ្មោះរបស់អ្នកជាមុនសិន!"); return; }
 
         let score = 0;
         examData.forEach((item, index) => {
             const selected = document.querySelector(`input[name="q${index}"]:checked`);
-            if (selected && selected.value === item[4]) {
-                score++;
-            }
+            if (selected && selected.value === item[4]) { score++; }
         });
 
         document.getElementById('exam-step').classList.add('hidden');
