@@ -36,40 +36,36 @@
 
     <div id="setup-step" class="hidden">
         <h2 id="setup-title"></h2>
-        <textarea id="json-input" placeholder="បិទភ្ជាប់កូដសំណួរទីនេះ..."></textarea>
-        <button class="btn" onclick="startExam()">ចាប់ផ្ដើម</button>
+        <p>សូមបិទភ្ជាប់កូដសំណួរដែលទទួលបានពីអ្នកគ្រូ៖</p>
+        <textarea id="json-input" rows="8" placeholder='[ ["សំណួរ", "ចម្លើយ១", "ចម្លើយ២", "ចម្លើយ៣", "ចម្លើយត្រូវ"], ... ]'></textarea>
+        <button class="btn" onclick="startExam()">បង្កើតវិញ្ញាសាភ្លាមៗ</button>
     </div>
 
     <div id="exam-step" class="hidden">
-        <h2 id="active-title"></h2>
+        <h2 id="active-title" style="color: var(--primary);"></h2>
         <input type="text" id="student-name" placeholder="វាយឈ្មោះរបស់អ្នក...">
         <div id="questions-container"></div>
         <button class="btn" style="background: var(--success);" onclick="finishExam()">បញ្ជូនចម្លើយ</button>
     </div>
 
     <div id="result-step" class="result-box">
-        <h2>លទ្ធផលរបស់អ្នក</h2>
+        <h2 style="color: var(--success);">អបអរសាទរ! អ្នកធ្វើបានល្អណាស់</h2>
         <h3 id="res-name"></h3>
-        <h1 id="res-score"></h1>
-        <p>សូមថតរូបអេក្រង់ផ្ញើជូនអ្នកគ្រូ។</p>
-        <p style="color: red;">* អ្នកអាចធ្វើបានតែម្ដងគត់សម្រាប់ឧបករណ៍នេះ។</p>
+        <hr>
+        <p>ពិន្ទុរបស់អ្នកគឺ៖</p>
+        <h1 id="res-score" style="font-size: 60px; color: var(--primary);"></h1>
+        <p>សូមថតរូបអេក្រង់លទ្ធផលនេះ រួចផ្ញើជូនអ្នកគ្រូក្នុង Telegram។</p>
+        <button class="btn" onclick="location.reload()">ត្រឡប់ទៅដើមវិញ</button>
     </div>
 </div>
 
 <script>
     let examData = [];
-    let currentTestId = "";
 
     function goToSetup(title) {
-        currentTestId = title;
-        // ត្រួតពិនិត្យថា តើធ្លាប់ធ្វើឬនៅ?
-        if (localStorage.getItem("done_" + currentTestId)) {
-            alert("អ្នកគ្រូបានកំណត់ឱ្យធ្វើតែម្ដងគត់! អ្នកបានធ្វើវិញ្ញាសានេះរួចហើយ។");
-            return;
-        }
         document.getElementById('menu-step').classList.add('hidden');
         document.getElementById('setup-step').classList.remove('hidden');
-        document.getElementById('setup-title').innerText = title;
+        document.getElementById('setup-title').innerText = "រៀបចំ " + title;
     }
 
     function startExam() {
@@ -78,37 +74,45 @@
             examData = JSON.parse(input);
             document.getElementById('setup-step').classList.add('hidden');
             document.getElementById('exam-step').classList.remove('hidden');
+            
             let html = "";
             examData.forEach((item, index) => {
-                html += `<div class="question-card">
-                    <p><b>${index+1}. ${item[0]}</b></p>
-                    <label class="option"><input type="radio" name="q${index}" value="${item[1]}"> ${item[1]}</label>
-                    <label class="option"><input type="radio" name="q${index}" value="${item[2]}"> ${item[2]}</label>
-                    <label class="option"><input type="radio" name="q${index}" value="${item[3]}"> ${item[3]}</label>
-                </div>`;
+                html += `
+                    <div class="question-card">
+                        <p><b>${index + 1}. ${item[0]}</b></p>
+                        <label class="option"><input type="radio" name="q${index}" value="${item[1]}"> ${item[1]}</label>
+                        <label class="option"><input type="radio" name="q${index}" value="${item[2]}"> ${item[2]}</label>
+                        <label class="option"><input type="radio" name="q${index}" value="${item[3]}"> ${item[3]}</label>
+                    </div>
+                `;
             });
             document.getElementById('questions-container').innerHTML = html;
-        } catch(e) { alert("កូដសំណួរមិនត្រឹមត្រូវ!"); }
+        } catch (e) {
+            alert("កូដសំណួរមិនត្រឹមត្រូវទេ! សូមពិនិត្យមើលម្ដងទៀត។");
+        }
     }
 
     function finishExam() {
         const name = document.getElementById('student-name').value;
-        if (!name) return alert("សូមដាក់ឈ្មោះ!");
+        if (!name) {
+            alert("សូមវាយឈ្មោះរបស់អ្នកជាមុនសិន!");
+            return;
+        }
 
         let score = 0;
         examData.forEach((item, index) => {
-            const sel = document.querySelector(`input[name="q${index}"]:checked`);
-            if (sel && sel.value === item[4]) score++;
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            if (selected && selected.value === item[4]) {
+                score++;
+            }
         });
-
-        // រក្សាទុកក្នុង LocalStorage ថាធ្វើរួចហើយ
-        localStorage.setItem("done_" + currentTestId, "true");
 
         document.getElementById('exam-step').classList.add('hidden');
         document.getElementById('result-step').style.display = "block";
-        document.getElementById('res-name').innerText = name;
-        document.getElementById('res-score').innerText = score + "/" + examData.length;
+        document.getElementById('res-name').innerText = "ឈ្មោះ៖ " + name;
+        document.getElementById('res-score').innerText = score + " / " + examData.length;
     }
 </script>
+
 </body>
 </html>
