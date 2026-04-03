@@ -26,10 +26,30 @@
         .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; margin-top: 10px; }
         .question-card { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--accent); }
         
-        /* កែសម្រួល Label ឱ្យរង្វង់ចុចនៅខាងមុខ */
-        .option { display: flex; align-items: center; margin: 12px 0; cursor: pointer; font-size: 18px; padding: 5px; border-radius: 5px; transition: 0.2s; }
-        .option:hover { background: #ececec; }
-        .option input { margin-right: 15px; width: 20px; height: 20px; cursor: pointer; }
+        /* កែសម្រួលឱ្យប្រអប់ចុចនៅខាងមុខអក្សរ */
+        .option { 
+            display: flex; 
+            align-items: flex-start; /* ឱ្យរង្វង់ចុចនៅជួរខាងលើជានិច្ច */
+            margin: 12px 0; 
+            cursor: pointer; 
+            font-size: 18px; 
+            padding: 10px; 
+            border-radius: 8px; 
+            transition: 0.2s;
+        }
+        .option:hover { background: #eef2f7; }
+
+        /* កែទំហំប្រអប់ចុចឱ្យធំ និងមានគម្លាតពីអក្សរ */
+        .option input { 
+            margin-right: 15px; 
+            margin-top: 5px; 
+            width: 22px; 
+            height: 22px; 
+            flex-shrink: 0; /* ការពារកុំឱ្យប្រអប់ចុចរួមតូចនៅពេលអក្សរវែង */
+            cursor: pointer; 
+        }
+
+        .option span { line-height: 1.4; }
         
         .result-box { text-align: center; display: none; }
     </style>
@@ -99,9 +119,18 @@
                 html += `
                     <div class="question-card">
                         <p style="font-size: 20px;"><b>${index + 1}. ${item[0]}</b></p>
-                        <label class="option"><input type="radio" name="q${index}" value="${item[1]}"> <span>${item[1]}</span></label>
-                        <label class="option"><input type="radio" name="q${index}" value="${item[2]}"> <span>${item[2]}</span></label>
-                        <label class="option"><input type="radio" name="q${index}" value="${item[3]}"> <span>${item[3]}</span></label>
+                        <label class="option">
+                            <input type="radio" name="q${index}" value="${item[1]}"> 
+                            <span>${item[1]}</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q${index}" value="${item[2]}"> 
+                            <span>${item[2]}</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q${index}" value="${item[3]}"> 
+                            <span>${item[3]}</span>
+                        </label>
                     </div>
                 `;
             });
