@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEG | Digital Testing Center</title>
     <style>
         :root { --primary: #003057; --accent: #fbbc05; --success: #28a745; --bg: #f0f4f8; --white: #ffffff; }
-        body { font-family: 'Khmer OS Battambang', sans-serif; background: var(--bg); margin: 0; }
-        .navbar { background: var(--primary); color: white; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; border-bottom: 5px solid var(--accent); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; }
+        .navbar { background: var(--primary); color: white; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; border-bottom: 5px solid var(--accent); letter-spacing: 1px; }
         .container { width: 90%; max-width: 900px; margin: 30px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
         .menu-grid { 
@@ -26,31 +26,29 @@
         .btn { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; margin-top: 10px; }
         .question-card { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--accent); }
         
-        /* កែសម្រួលឱ្យប្រអប់ចុចនៅខាងមុខអក្សរ */
         .option { 
             display: flex; 
-            align-items: flex-start; /* ឱ្យរង្វង់ចុចនៅជួរខាងលើជានិច្ច */
+            align-items: flex-start; 
             margin: 12px 0; 
             cursor: pointer; 
             font-size: 18px; 
             padding: 10px; 
             border-radius: 8px; 
             transition: 0.2s;
+            border: 1px solid transparent;
         }
-        .option:hover { background: #eef2f7; }
-
-        /* កែទំហំប្រអប់ចុចឱ្យធំ និងមានគម្លាតពីអក្សរ */
+        .option:hover { background: #f0f4f8; border-color: #ddd; }
+        
         .option input { 
             margin-right: 15px; 
             margin-top: 5px; 
             width: 22px; 
             height: 22px; 
-            flex-shrink: 0; /* ការពារកុំឱ្យប្រអប់ចុចរួមតូចនៅពេលអក្សរវែង */
+            flex-shrink: 0; 
             cursor: pointer; 
         }
-
-        .option span { line-height: 1.4; }
         
+        .option span { line-height: 1.5; }
         .result-box { text-align: center; display: none; }
     </style>
 </head>
@@ -60,7 +58,7 @@
 
 <div class="container">
     <div id="menu-step">
-        <h2 style="text-align: center;">Choose a discipline</h2>
+        <h2 style="text-align: center;">Choose Your Discipline</h2>
         <div class="menu-grid">
             <div class="card" onclick="goToSetup('Homework')"><h3>Homework</h3></div>
             <div class="card" onclick="goToSetup('Worksheet')"><h3>Worksheet</h3></div>
@@ -73,27 +71,27 @@
 
     <div id="setup-step" class="hidden">
         <h2 id="setup-title" style="text-align: center; color: var(--primary);"></h2>
-        <p style="text-align: center;">សូមបិទភ្ជាប់កូដសំណួរដែលទទួលបានពីអ្នកគ្រូ៖</p>
-        <textarea id="json-input" rows="8" placeholder='បិទភ្ជាប់កូដសំណួរនៅទីនេះ...'></textarea>
-        <button class="btn" onclick="startExam()">បង្កើតវិញ្ញាសាភ្លាមៗ</button>
-        <button class="btn" style="background: #ccc;" onclick="location.reload()">ត្រឡប់ក្រោយ</button>
+        <p style="text-align: center;">Please paste the exam code provided by your teacher:</p>
+        <textarea id="json-input" rows="8" placeholder="Paste exam code here..."></textarea>
+        <button class="btn" onclick="startExam()">Generate Exam Now</button>
+        <button class="btn" style="background: #ccc;" onclick="location.reload()">Back</button>
     </div>
 
     <div id="exam-step" class="hidden">
         <h2 id="active-title" style="text-align: center; color: var(--primary);"></h2>
-        <input type="text" id="student-name" placeholder="វាយឈ្មោះពិតរបស់អ្នក...">
+        <input type="text" id="student-name" placeholder="Enter your full name...">
         <div id="questions-container"></div>
-        <button class="btn" style="background: var(--success);" onclick="finishExam()">បញ្ជូនចម្លើយ</button>
+        <button class="btn" style="background: var(--success);" onclick="finishExam()">Submit Answers</button>
     </div>
 
     <div id="result-step" class="result-box">
-        <h2 style="color: var(--success);">ការធ្វើតេស្តត្រូវបានបញ្ចប់!</h2>
+        <h2 style="color: var(--success);">Examination Completed!</h2>
         <h3 id="res-name"></h3>
         <hr>
-        <p>ពិន្ទុដែលទទួលបាន៖</p>
+        <p>Your Final Score:</p>
         <h1 id="res-score" style="font-size: 60px; color: var(--primary); margin: 10px 0;"></h1>
-        <p>សូមថតរូបអេក្រង់លទ្ធផលនេះ រួចផ្ញើជូនអ្នកគ្រូក្នុង Telegram។</p>
-        <button class="btn" onclick="location.reload()">ធ្វើម្ដងទៀត</button>
+        <p>Please take a screenshot of this result and send it to your teacher via Telegram.</p>
+        <button class="btn" onclick="location.reload()">Try Again</button>
     </div>
 </div>
 
@@ -119,30 +117,21 @@
                 html += `
                     <div class="question-card">
                         <p style="font-size: 20px;"><b>${index + 1}. ${item[0]}</b></p>
-                        <label class="option">
-                            <input type="radio" name="q${index}" value="${item[1]}"> 
-                            <span>${item[1]}</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="q${index}" value="${item[2]}"> 
-                            <span>${item[2]}</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="q${index}" value="${item[3]}"> 
-                            <span>${item[3]}</span>
-                        </label>
+                        <label class="option"><input type="radio" name="q${index}" value="${item[1]}"> <span>${item[1]}</span></label>
+                        <label class="option"><input type="radio" name="q${index}" value="${item[2]}"> <span>${item[2]}</span></label>
+                        <label class="option"><input type="radio" name="q${index}" value="${item[3]}"> <span>${item[3]}</span></label>
                     </div>
                 `;
             });
             document.getElementById('questions-container').innerHTML = html;
         } catch (e) {
-            alert("កូដសំណួរមិនត្រឹមត្រូវទេ! សូមពិនិត្យមើលម្ដងទៀត។");
+            alert("Invalid exam code! Please check and try again.");
         }
     }
 
     function finishExam() {
         const name = document.getElementById('student-name').value;
-        if (!name) { alert("សូមវាយឈ្មោះរបស់អ្នកជាមុនសិន!"); return; }
+        if (!name) { alert("Please enter your name before submitting!"); return; }
 
         let score = 0;
         examData.forEach((item, index) => {
@@ -152,7 +141,7 @@
 
         document.getElementById('exam-step').classList.add('hidden');
         document.getElementById('result-step').style.display = "block";
-        document.getElementById('res-name').innerText = "ឈ្មោះសិស្ស៖ " + name;
+        document.getElementById('res-name').innerText = "Student Name: " + name;
         document.getElementById('res-score').innerText = score + " / " + examData.length;
     }
 </script>
